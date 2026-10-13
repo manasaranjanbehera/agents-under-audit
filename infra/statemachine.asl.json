@@ -256,7 +256,7 @@
       "Parameters": {
         "TopicArn": "${AnalystTopicArn}",
         "Subject": "Comms triage: pipeline failure, human review required",
-        "Message.$": "States.Format('Object {} could not be triaged automatically. Error: {}. Execution: {}', $.key, States.JsonToString($.error), $$.Execution.Id)"
+        "Message.$": "States.Format('Object {} could not be triaged automatically. Error: {}. Details are in the failure record and execution history. Execution: {}', $.key, $.error.Error, $$.Execution.Id)"
       },
       "ResultPath": null,
       "Retry": [

@@ -40,6 +40,15 @@ def test_dedupe_claim_key_is_stable_across_executions():
     assert item["decided_at"] == {"S": "claim"}
 
 
+def test_alerts_carry_no_error_causes_or_transcript_content():
+    for name, state in ASL["States"].items():
+        if state.get("Resource") != "arn:aws:states:::sns:publish":
+            continue
+        params = json.dumps(state["Parameters"])
+        assert "$.error)" not in params and "$.error.Cause" not in params, name
+        assert not re.search(r"\$\.(findings|reader|prescreen|record)\b", params), name
+
+
 def test_only_documented_placeholders_are_used():
     found = set()
     for path in INFRA.rglob("*.json"):

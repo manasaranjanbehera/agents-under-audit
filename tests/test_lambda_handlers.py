@@ -4,7 +4,6 @@ import json
 import pytest
 from botocore.exceptions import ClientError
 from conftest import StubBedrock, findings_json, text_response
-from pydantic import ValidationError
 
 from comms_triage import lambda_handlers
 
@@ -68,5 +67,22 @@ def test_malformed_object_fails_validation_before_any_model_call(wire):
     key = "inbound/bad.json"
     wire({key: b'{"conversation_id": "../etc", "messages": []}'})
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(lambda_handlers.InputRejected, match="conversation_id:string_pattern"):
         lambda_handlers.read_handler({"bucket": "b", "key": key}, None)
+
+
+def test_rejection_message_does_not_quote_the_chat(conversations, wire):
+    quote = "keep it quiet until we book it"
+    body = json.loads(conversations["CHAT-003"].model_dump_json())
+    body["messages"][1] = quote
+    body["messages"][0]["sent_at"] = f"{quote} at noon"
+    key = "inbound/bad.json"
+    wire({key: json.dumps(body).encode()})
+
+    with pytest.raises(lambda_handlers.InputRejected) as raised:
+        lambda_handlers.read_handler({"bucket": "b", "key": key}, None)
+
+    message = str(raised.value)
+    assert "messages.1:model_type" in message
+    assert "keep it quiet" not in message
+    assert raised.value.__suppress_context__

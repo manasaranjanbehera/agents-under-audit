@@ -12,6 +12,8 @@ from functools import cache
 from typing import Any
 from urllib.parse import unquote_plus
 
+from pydantic import ValidationError
+
 from comms_triage.config import Settings
 from comms_triage.models import Conversation, PrescreenHit, ReaderOutcome
 from comms_triage.policy import decide
@@ -60,12 +62,24 @@ def _get_object(bucket: str, key: str) -> dict[str, Any]:
         return _s3().get_object(Bucket=bucket, Key=decoded)
 
 
+def _parse_conversation(body: bytes) -> Conversation:
+    """The failure message reaches Step Functions history and analyst email, so it must not
+    carry input values: pydantic's default message quotes the offending chat text."""
+    try:
+        return Conversation.model_validate_json(body)
+    except ValidationError as exc:
+        problems = sorted(
+            {f"{'.'.join(map(str, e['loc'])) or '<root>'}:{e['type']}" for e in exc.errors()}
+        )
+        raise InputRejected(f"invalid conversation: {', '.join(problems[:10])}") from None
+
+
 def read_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     """Input ``{"bucket", "key"}``. Has S3 read and Bedrock invoke permissions, nothing else."""
     obj = _get_object(event["bucket"], event["key"])
     if obj["ContentLength"] > MAX_OBJECT_BYTES:
         raise InputRejected(f"object is {obj['ContentLength']} bytes; limit {MAX_OBJECT_BYTES}")
-    conversation = Conversation.model_validate_json(obj["Body"].read())
+    conversation = _parse_conversation(obj["Body"].read())
     hits = prescreen(conversation)
     outcome = run_reader(conversation, _bedrock(), _settings())
 

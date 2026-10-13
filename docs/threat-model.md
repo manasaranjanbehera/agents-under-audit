@@ -25,7 +25,7 @@
 | Fabricated evidence | Reader cites text not in the chat | Verbatim grounding check; ungrounded findings route to human review | Low |
 | Cost or capacity exhaustion | Huge objects, thousands of messages, upload floods | 256 KB object limit and bounded schema before any model call; 600-token output cap; reader reserved concurrency; failures recorded as `human_review` | Throughput only |
 | Duplicate processing | Redelivered EventBridge event | Conditional event-ID claim ends the duplicate before the model call | A failed claim write proceeds, which can rarely produce a duplicate |
-| Data leakage through operations channels | Chat quotes in logs or email | Logs and SNS carry IDs, rule names and counts only; Bedrock invocation logging stays off | Quotes are in DynamoDB, which is encrypted at rest |
+| Data leakage through operations channels | Chat quotes in logs or email | Logs and SNS carry IDs, rule names and counts only; failure alerts carry the error name, never its cause; invalid objects are rejected with field paths and error types, not input values; Bedrock invocation logging stays off | Quotes are in DynamoDB, which is encrypted at rest |
 | Tool abuse | Transcript asks the model to call a tool | The reader has no tools | None at the reader |
 | Over-escalation | Benign "ignore the noise" | Rules require reviewer-addressed or outcome-dictating phrasing; hard negatives in the golden set | Analyst time |
 
