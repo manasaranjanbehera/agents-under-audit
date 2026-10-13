@@ -1,0 +1,26 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadInboundConversations",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::${BucketName}/inbound/*"
+    },
+    {
+      "Sid": "InvokeReaderModel",
+      "Effect": "Allow",
+      "Action": "bedrock:InvokeModel",
+      "Resource": [
+        "arn:aws:bedrock:*::foundation-model/amazon.nova-lite-v1:0",
+        "arn:aws:bedrock:${Region}:${AccountId}:inference-profile/us.amazon.nova-lite-v1:0"
+      ]
+    },
+    {
+      "Sid": "ApplyPromptAttackGuardrail",
+      "Effect": "Allow",
+      "Action": "bedrock:ApplyGuardrail",
+      "Resource": "arn:aws:bedrock:${Region}:${AccountId}:guardrail/*"
+    }
+  ]
+}
