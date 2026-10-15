@@ -1,25 +1,31 @@
-# Python
-__pycache__/
-*.py[cod]
-.venv/
-.pytest_cache/
-.ruff_cache/
-*.egg-info/
-dist/
-build/
+# dependencies
+/node_modules
 
-# Secrets
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+*.log
+
+# local env files
 .env
 .env.*
 !.env.example
 
-# Run outputs
-**/outputs/
-*.log
+# vercel
+.vercel
 
-# OS / editors
-.DS_Store
-.idea/
-.vscode/
-.cursor/
-*.swp
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# leftover python cache from previous repo shape
+__pycache__/
+*.py[cod]
+.venv/
