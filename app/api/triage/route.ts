@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   if (!email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const limit = checkRateLimit(email.toLowerCase());
+  const limit = await checkRateLimit(email.toLowerCase());
   if (!limit.allowed) {
     return NextResponse.json(
       { error: "Rate limit exceeded. Try again in an hour." },

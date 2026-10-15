@@ -30,7 +30,7 @@ Then open `http://localhost:3000`.
 - Configure session secret (`SESSION_SECRET`)
 - Configure Bedrock access (`AWS_REGION`, `BEDROCK_MODEL_ID`)
 - Configure Resend (`RESEND_API_KEY`, `ALERT_FROM_EMAIL`)
-- Optional: configure `POSTGRES_URL` for case-record persistence
+- Configure `POSTGRES_URL` for production-safe OTP, rate-limiting, and case-record persistence
 
 ## Notes
 

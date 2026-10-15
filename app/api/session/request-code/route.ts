@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   }
 
   const email = parsed.data.email.toLowerCase();
-  const otpLimit = checkRateLimit(`otp:${email}`, { limit: 5, windowMs: 60 * 60 * 1000 });
+  const otpLimit = await checkRateLimit(`otp:${email}`, { limit: 5, windowMs: 60 * 60 * 1000 });
   if (!otpLimit.allowed) {
     return NextResponse.json(
       { error: "Too many code requests. Try again in an hour." },
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const code = issueOtp(email);
+  const code = await issueOtp(email);
   const hasEmailProvider = Boolean(process.env.RESEND_API_KEY && process.env.ALERT_FROM_EMAIL);
 
   if (process.env.NODE_ENV === "production" && !hasEmailProvider) {

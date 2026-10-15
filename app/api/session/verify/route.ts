@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   }
 
   const { email, code } = parsed.data;
-  const verifyLimit = checkRateLimit(`otp-verify:${email.toLowerCase()}`, {
+  const verifyLimit = await checkRateLimit(`otp-verify:${email.toLowerCase()}`, {
     limit: 10,
     windowMs: 60 * 60 * 1000,
   });
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       { status: 429 },
     );
   }
-  if (!verifyOtp(email, code)) {
+  if (!(await verifyOtp(email, code))) {
     return NextResponse.json({ error: "Invalid or expired code." }, { status: 401 });
   }
 
