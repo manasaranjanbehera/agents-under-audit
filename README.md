@@ -1,8 +1,8 @@
+![Agents Under Audit — deterministic market-conduct triage on Amazon Bedrock](docs/images/agents-under-audit-banner.png)
+
 # Agents Under Audit: Conduct Alert Triage
 
 This project showcases a practical market-conduct triage use case: an untrusted employee chat is reviewed with Amazon Bedrock, and the final outcome is decided in deterministic code so chat text cannot directly force a verdict.
-
-Live app URL: add your deployed Vercel URL here.
 
 ## What It Does
 
